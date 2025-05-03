@@ -34,7 +34,7 @@ gem "devise"
 gem "faker" # Added for seeding
 
 # Use Tailwind CSS with Rails [https://github.com/rails/tailwindcss-rails]
-gem "tailwindcss-rails", "~> 3.3.1"
+gem "tailwindcss-rails", "~> 4.2.3"
 
 # Use Hotwire for interactivity [https://github.com/hotwired/hotwire-rails]
 gem "hotwire-rails"
