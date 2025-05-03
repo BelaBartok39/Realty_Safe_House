@@ -1,7 +1,11 @@
 Rails.application.routes.draw do
   devise_for :users
-  resources :properties
-  resources :signups, only: [ :new, :create, :show, :index ]
+
+  resources :properties do
+    resources :signups, only: [ :new, :create ] # Nested for creating a signup for a specific property
+  end
+
+  resources :signups, only: [ :index, :show ] # Top-level for viewing my signups or realtor managing signups
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   get "up" => "rails/health#show", as: :rails_health_check

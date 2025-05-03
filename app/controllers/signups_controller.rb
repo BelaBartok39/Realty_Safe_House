@@ -1,6 +1,9 @@
 class SignupsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_signup, only: [ :show, :edit, :update, :destroy ]
+  before_action :set_property, only: [ :new, :create ]
+  before_action :require_client!, only: [ :new, :create ]
+  before_action :set_signup, only: [ :show ]
+  before_action :authorize_signup_viewer!, only: [ :show ]
 
   def index
     if current_user.realtor?
@@ -15,43 +18,45 @@ class SignupsController < ApplicationController
   end
 
   def new
-    @signup = Signup.new
-    @property = Property.find(params[:property_id]) if params[:property_id]
+    # @property is set by before_action
+    @signup = @property.signups.build(user: current_user)
   end
 
   def create
-    @signup = current_user.signups.build(signup_params)
+    # @property is set by before_action
+    @signup = @property.signups.build(user: current_user)
+    @signup.status = "pending" # Explicitly set initial status
+
     if @signup.save
-      redirect_to @signup, notice: "Signup request submitted!"
+      redirect_to signup_path(@signup), notice: "Request submitted successfully. You will be notified upon approval."
     else
+      # Need to set @property again if rendering new
       render :new, status: :unprocessable_entity
     end
   end
 
-  def edit
-    # Optional: Only allow editing if pending and by the owner
-  end
-
-  def update
-    if @signup.update(signup_params)
-      redirect_to @signup, notice: "Signup updated."
-    else
-      render :edit, status: :unprocessable_entity
-    end
-  end
-
-  def destroy
-    @signup.destroy
-    redirect_to signups_path, notice: "Signup deleted."
-  end
-
   private
+
+  def set_property
+    @property = Property.find(params[:property_id])
+  rescue ActiveRecord::RecordNotFound
+    redirect_to root_path, alert: "Property not found."
+  end
 
   def set_signup
     @signup = Signup.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    redirect_to root_path, alert: "Signup not found."
   end
 
-  def signup_params
-    params.require(:signup).permit(:property_id, :license_front, :license_back, :selfie)
+  def require_client!
+    redirect_to root_path, alert: "Only clients can request attendance." unless current_user.client?
+  end
+
+  def authorize_signup_viewer!
+    # Allow viewing if it's the client's own signup OR if it belongs to a property managed by the realtor
+    is_owner = @signup.user == current_user
+    is_realtor_of_property = current_user.realtor? && @signup.property.realtor == current_user
+    redirect_to root_path, alert: "You are not authorized to view this signup." unless is_owner || is_realtor_of_property
   end
 end

@@ -34,8 +34,7 @@
 
         <%# Request Attendance for Client %>
         <% if user_signed_in? && current_user.client? %>
-          <%# TODO: Link to new_property_signup_path(@property) once signups are implemented %>
-          <%= link_to 'Request Attendance', '#', class: "inline-block bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition font-semibold" %>
+          <%= link_to 'Request Attendance', new_property_signup_path(@property), class: "inline-block bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition font-semibold" %>
         <% end %>
       </div>
     </div>
