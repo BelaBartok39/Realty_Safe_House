@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_05_03_071856) do
+ActiveRecord::Schema[7.2].define(version: 2025_05_03_075616) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -56,7 +56,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_05_03_071856) do
   create_table "signups", force: :cascade do |t|
     t.integer "user_id"
     t.integer "property_id"
-    t.string "status"
+    t.integer "status", default: 0
     t.string "license_front"
     t.string "license_back"
     t.string "selfie"

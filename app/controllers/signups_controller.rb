@@ -2,8 +2,9 @@ class SignupsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_property, only: [ :new, :create ]
   before_action :require_client!, only: [ :new, :create ]
-  before_action :set_signup, only: [ :show ]
+  before_action :set_signup, only: [ :show, :update ] # Add :update
   before_action :authorize_signup_viewer!, only: [ :show ]
+  before_action :authorize_signup_updater!, only: [ :update ] # Add authorization for update
 
   def index
     if current_user.realtor?
@@ -35,6 +36,16 @@ class SignupsController < ApplicationController
     end
   end
 
+  def update
+    if @signup.update(signup_params)
+      # TODO: Add notification logic later (e.g., email client)
+      redirect_to signup_path(@signup), notice: "Signup status updated successfully."
+    else
+      # If update fails, redirect back to the signup page with an alert
+      redirect_to signup_path(@signup), alert: "Failed to update signup status."
+    end
+  end
+
   private
 
   def set_property
@@ -58,5 +69,15 @@ class SignupsController < ApplicationController
     is_owner = @signup.user == current_user
     is_realtor_of_property = current_user.realtor? && @signup.property.realtor == current_user
     redirect_to root_path, alert: "You are not authorized to view this signup." unless is_owner || is_realtor_of_property
+  end
+
+  def authorize_signup_updater!
+    # Only allow updating if the current user is a realtor AND owns the property associated with the signup
+    is_realtor_of_property = current_user.realtor? && @signup.property.realtor == current_user
+    redirect_to root_path, alert: "You are not authorized to update this signup." unless is_realtor_of_property
+  end
+
+  def signup_params
+    params.require(:signup).permit(:status)
   end
 end

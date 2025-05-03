@@ -1,21 +1,30 @@
-<h1 class="text-2xl font-bold mb-6 text-gray-800">My Signup Requests</h1>
-<div class="bg-white rounded-xl shadow p-4">
-  <table class="min-w-full divide-y divide-gray-200">
+<h1 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
+  <%= current_user.realtor? ? 'Manage Signup Requests' : 'My Signup Requests' %>
+</h1>
+
+<div class="bg-white dark:bg-gray-900 rounded-xl shadow p-4">
+  <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
     <thead>
       <tr>
-        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Property</th>
-        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Requested</th>
-        <th class="px-4 py-2"></th>
+        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Property</th>
+        <% if current_user.realtor? %>
+          <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Client</th>
+        <% end %>
+        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Status</th>
+        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Requested</th>
+        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
       </tr>
     </thead>
-    <tbody class="divide-y divide-gray-100">
+    <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
       <% @signups.each do |signup| %>
         <tr>
           <td class="px-4 py-2">
             <%= link_to signup.property.title, property_path(signup.property), class: 'text-blue-600 hover:underline dark:text-blue-400 dark:hover:text-blue-300' %>
             <div class="text-xs text-gray-500 dark:text-gray-400"><%= signup.property.address %></div>
           </td>
+          <% if current_user.realtor? %>
+            <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300"><%= signup.user.email %></td>
+          <% end %>
           <td class="px-4 py-2">
             <span class="inline-block px-3 py-1 rounded text-xs font-medium <%= status_badge_class(signup.status) %>">
               <%= signup.status.presence&.humanize || 'Unknown' %>
@@ -25,7 +34,21 @@
             <%= signup.created_at.strftime('%b %d, %Y %I:%M %p') %>
           </td>
           <td class="px-4 py-2">
-            <%= link_to 'View', signup_path(signup), class: 'text-blue-600 hover:underline dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium' %>
+            <div class="flex items-center gap-2">
+              <%= link_to 'View', signup_path(signup), class: 'text-blue-600 hover:underline dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium' %>
+              <% if current_user.realtor? && signup.pending? %>
+                <span class="text-gray-300 dark:text-gray-600">|</span>
+                <%= form_with(model: signup, url: signup_path(signup), method: :patch, class: 'inline-block') do |form| %>
+                  <%= form.hidden_field :status, value: 'approved' %>
+                  <%= form.submit 'Approve', class: "text-green-600 hover:underline dark:text-green-400 dark:hover:text-green-300 text-sm font-medium cursor-pointer p-0 bg-transparent border-none" %>
+                <% end %>
+                <span class="text-gray-300 dark:text-gray-600">|</span>
+                <%= form_with(model: signup, url: signup_path(signup), method: :patch, class: 'inline-block') do |form| %>
+                  <%= form.hidden_field :status, value: 'denied' %>
+                  <%= form.submit 'Deny', class: "text-red-600 hover:underline dark:text-red-400 dark:hover:text-red-300 text-sm font-medium cursor-pointer p-0 bg-transparent border-none" %>
+                <% end %>
+              <% end %>
+            </div>
           </td>
         </tr>
       <% end %>

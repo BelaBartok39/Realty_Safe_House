@@ -40,9 +40,17 @@
     <%# Placeholder for Realtor actions %>
     <% if current_user.realtor? && current_user == @signup.property.realtor && @signup.pending? %>
        <div class="border-t dark:border-gray-700 pt-4 mt-4 flex gap-4">
-         <%# TODO: Add Approve/Deny buttons %>
-         <button class="bg-green-500 text-white px-4 py-1 rounded text-sm font-medium hover:bg-green-600 transition">Approve (Not Implemented)</button>
-         <button class="bg-red-500 text-white px-4 py-1 rounded text-sm font-medium hover:bg-red-600 transition">Deny (Not Implemented)</button>
+         <%# Approve Button Form %>
+         <%= form_with(model: @signup, url: signup_path(@signup), method: :patch) do |form| %>
+           <%= form.hidden_field :status, value: 'approved' %>
+           <%= form.submit 'Approve', class: "bg-green-500 text-white px-4 py-1 rounded text-sm font-medium hover:bg-green-600 transition cursor-pointer" %>
+         <% end %>
+
+         <%# Deny Button Form %>
+         <%= form_with(model: @signup, url: signup_path(@signup), method: :patch) do |form| %>
+           <%= form.hidden_field :status, value: 'denied' %>
+           <%= form.submit 'Deny', class: "bg-red-500 text-white px-4 py-1 rounded text-sm font-medium hover:bg-red-600 transition cursor-pointer" %>
+         <% end %>
        </div>
     <% end %>
 
