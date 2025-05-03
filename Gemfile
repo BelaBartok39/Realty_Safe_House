@@ -31,6 +31,8 @@ gem "image_processing"
 # Authentication solution for Rails [https://github.com/heartcombo/devise]
 gem "devise"
 
+gem "faker" # Added for seeding
+
 # Use Tailwind CSS with Rails [https://github.com/rails/tailwindcss-rails]
 gem "tailwindcss-rails", "~> 3.3.1"
 
