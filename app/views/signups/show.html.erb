@@ -1,0 +1,43 @@
+<div class="max-w-xl mx-auto bg-white p-6 rounded-xl shadow">
+  <h1 class="text-xl font-bold mb-4 text-gray-800">Signup Request Details</h1>
+  <div class="mb-4">
+    <span class="font-medium text-gray-700">Status:</span>
+    <% status_color = { 'pending' => 'bg-yellow-100 text-yellow-800', 'approved' => 'bg-green-100 text-green-800', 'denied' => 'bg-red-100 text-red-800' }[@signup.status] %>
+    <span class="inline-block px-3 py-1 rounded <%= status_color %>"><%= @signup.status.titleize %></span>
+  </div>
+  <div class="mb-4">
+    <span class="font-medium text-gray-700">License (Front):</span><br>
+    <% if @signup.license_front.attached? %>
+      <%= image_tag @signup.license_front, class: 'rounded shadow mt-2 w-48' %>
+    <% else %>
+      <span class="text-gray-400">Not uploaded</span>
+    <% end %>
+  </div>
+  <div class="mb-4">
+    <span class="font-medium text-gray-700">License (Back):</span><br>
+    <% if @signup.license_back.attached? %>
+      <%= image_tag @signup.license_back, class: 'rounded shadow mt-2 w-48' %>
+    <% else %>
+      <span class="text-gray-400">Not uploaded</span>
+    <% end %>
+  </div>
+  <div class="mb-4">
+    <span class="font-medium text-gray-700">Selfie:</span><br>
+    <% if @signup.selfie.attached? %>
+      <%= image_tag @signup.selfie, class: 'rounded-full shadow mt-2 w-32 h-32 object-cover' %>
+    <% else %>
+      <span class="text-gray-400">Not uploaded</span>
+    <% end %>
+  </div>
+  <% if user_signed_in? && current_user.realtor? %>
+    <div class="flex gap-4 mt-6">
+      <% if @signup.pending? %>
+        <%= button_to 'Approve', approve_signup_path(@signup), method: :post, class: 'bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition' %>
+        <%= button_to 'Deny', deny_signup_path(@signup), method: :post, class: 'bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition' %>
+      <% end %>
+    </div>
+  <% end %>
+  <div class="mt-6">
+    <%= link_to 'Back to Requests', signups_path, class: 'text-blue-600 hover:underline' %>
+  </div>
+</div>

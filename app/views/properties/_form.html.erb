@@ -1,0 +1,36 @@
+<%= form_with(model: property, local: true, html: { class: 'space-y-6 max-w-xl mx-auto bg-white p-6 rounded-xl shadow' }) do |form| %>
+  <div>
+    <%= form.label :title, class: 'block font-medium text-gray-700 mb-1' %>
+    <%= form.text_field :title, class: 'w-full border-gray-300 rounded px-3 py-2 focus:ring-blue-500 focus:border-blue-500' %>
+  </div>
+  <div>
+    <%= form.label :address, class: 'block font-medium text-gray-700 mb-1' %>
+    <%= form.text_field :address, class: 'w-full border-gray-300 rounded px-3 py-2 focus:ring-blue-500 focus:border-blue-500' %>
+  </div>
+  <div>
+    <%= form.label :description, class: 'block font-medium text-gray-700 mb-1' %>
+    <%= form.text_area :description, rows: 3, class: 'w-full border-gray-300 rounded px-3 py-2 focus:ring-blue-500 focus:border-blue-500' %>
+  </div>
+  <div class="flex gap-4">
+    <div class="flex-1">
+      <%= form.label :start_time, 'Open House Start', class: 'block font-medium text-gray-700 mb-1' %>
+      <%= form.datetime_select :start_time, class: 'w-full border-gray-300 rounded px-3 py-2' %>
+    </div>
+    <div class="flex-1">
+      <%= form.label :end_time, 'Open House End', class: 'block font-medium text-gray-700 mb-1' %>
+      <%= form.datetime_select :end_time, class: 'w-full border-gray-300 rounded px-3 py-2' %>
+    </div>
+  </div>
+  <div>
+    <%= form.label :image, class: 'block font-medium text-gray-700 mb-1' %>
+    <%= form.file_field :image, class: 'w-full border-gray-300 rounded px-3 py-2' %>
+    <% if property.image.attached? %>
+      <div class="mt-2">
+        <%= image_tag property.image.variant(resize_to_limit: [200, 120]), class: 'rounded shadow' %>
+      </div>
+    <% end %>
+  </div>
+  <div>
+    <%= form.submit class: 'w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 transition' %>
+  </div>
+<% end %>

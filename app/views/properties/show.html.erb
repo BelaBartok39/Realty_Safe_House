@@ -1,0 +1,44 @@
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden max-w-4xl mx-auto">
+  <% if @property.image.attached? %>
+    <%= image_tag @property.image, class: "w-full h-64 md:h-96 object-cover" %>
+  <% else %>
+    <div class="w-full h-64 md:h-96 bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500">No Image Available</div>
+  <% end %>
+
+  <div class="p-6 md:p-8">
+    <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2"><%= @property.title %></h1>
+    <p class="text-lg text-gray-600 dark:text-gray-400 mb-4"><%= @property.address %></p>
+
+    <div class="mb-6 border-t border-gray-200 dark:border-gray-700 pt-4">
+      <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-2">Open House Schedule</h2>
+      <p class="text-gray-700 dark:text-gray-300"><%= @property.start_time.strftime('%A, %B %d, %Y from %I:%M %p') %> to <%= @property.end_time.strftime('%I:%M %p') %></p>
+    </div>
+
+    <div class="mb-6 border-t border-gray-200 dark:border-gray-700 pt-4">
+      <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-2">Description</h2>
+      <p class="text-gray-700 dark:text-gray-300 whitespace-pre-wrap"><%= @property.description %></p>
+    </div>
+
+    <%# --- Action Buttons --- %>
+    <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row gap-4 items-center justify-between">
+      <div>
+        <%= link_to 'Back to Properties', properties_path, class: "text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition font-medium" %>
+      </div>
+
+      <div class="flex gap-4">
+        <%# Edit/Delete for Realtor %>
+        <% if user_signed_in? && current_user == @property.realtor %>
+          <%= link_to 'Edit Property', edit_property_path(@property), class: "inline-block bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition font-medium text-sm" %>
+          <%= link_to 'Delete Property', @property, data: { turbo_method: :delete, turbo_confirm: 'Are you sure?' }, class: "inline-block bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition font-medium text-sm" %>
+        <% end %>
+
+        <%# Request Attendance for Client %>
+        <% if user_signed_in? && current_user.client? %>
+          <%# TODO: Link to new_property_signup_path(@property) once signups are implemented %>
+          <%= link_to 'Request Attendance', '#', class: "inline-block bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition font-semibold" %>
+        <% end %>
+      </div>
+    </div>
+
+  </div>
+</div>

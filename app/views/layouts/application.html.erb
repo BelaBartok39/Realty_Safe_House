@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Realty Safe House" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= yield :head %>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+    <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application" %>
+    <%= javascript_importmap_tags %>
+    <script>
+      // Dark mode toggle logic
+      document.addEventListener('DOMContentLoaded', function() {
+        const html = document.documentElement;
+        const darkToggle = document.getElementById('dark-toggle');
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          html.classList.add('dark');
+        } else {
+          html.classList.remove('dark');
+        }
+        if (darkToggle) {
+          darkToggle.addEventListener('click', function() {
+            html.classList.toggle('dark');
+            localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
+          });
+        }
+      });
+    </script>
+  </head>
+  <body class="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 min-h-screen font-sans transition-colors duration-300">
+    <header class="sticky top-0 left-0 w-full z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur shadow-sm border-b border-gray-200 dark:border-gray-800 transition-colors duration-300">
+      <nav class="max-w-6xl mx-auto flex items-center justify-between py-4 px-4 md:px-8">
+        <div class="flex items-center gap-3">
+          <img src="/icon.svg" alt="Logo" class="h-10 w-10 rounded bg-white dark:bg-gray-800 shadow border border-gray-200 dark:border-gray-700 p-1 transition" />
+          <span class="font-extrabold text-2xl tracking-tight text-gray-800 dark:text-white">Realty Safe House</span>
+        </div>
+        <div class="flex gap-2 md:gap-4 items-center text-base">
+          <button id="dark-toggle" aria-label="Toggle dark mode" class="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+            <svg class="w-6 h-6 text-gray-700 dark:text-gray-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m8.66-13.66l-.71.71M4.05 19.07l-.71.71M21 12h-1M4 12H3m16.66 5.66l-.71-.71M4.05 4.93l-.71-.71M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+          </button>
+          <button id="mobile-nav-toggle" class="md:hidden p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+            <svg class="w-6 h-6 text-gray-700 dark:text-gray-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+          <div id="main-nav" class="hidden md:flex gap-3 md:gap-5 items-center text-base">
+            <% if user_signed_in? %>
+              <% if current_user.realtor? %>
+                <%= link_to 'Dashboard', properties_path, class: 'text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition px-2 py-1 rounded' %>
+                <%= link_to 'Signups', signups_path, class: 'text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition px-2 py-1 rounded' %>
+              <% else %>
+                <%= link_to 'Browse', properties_path, class: 'text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition px-2 py-1 rounded' %>
+                <%= link_to 'My Requests', signups_path, class: 'text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition px-2 py-1 rounded' %>
+              <% end %>
+              <%= link_to 'Logout', destroy_user_session_path, data: { turbo_method: :delete }, class: 'ml-2 text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 font-medium transition px-2 py-1 rounded' %>
+            <% else %>
+              <%= link_to 'Login', new_user_session_path, class: 'text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition px-2 py-1 rounded' %>
+              <%= link_to 'Sign Up', new_user_registration_path, class: 'ml-2 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium transition px-2 py-1 rounded' %>
+            <% end %>
+          </div>
+        </div>
+      </nav>
+      <div id="mobile-nav-menu" class="md:hidden hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 px-4 py-2">
+        <% if user_signed_in? %>
+          <% if current_user.realtor? %>
+            <%= link_to 'Dashboard', properties_path, class: 'block py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition' %>
+            <%= link_to 'Signups', signups_path, class: 'block py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition' %>
+          <% else %>
+            <%= link_to 'Browse', properties_path, class: 'block py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition' %>
+            <%= link_to 'My Requests', signups_path, class: 'block py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition' %>
+          <% end %>
+          <%= link_to 'Logout', destroy_user_session_path, data: { turbo_method: :delete }, class: 'block py-2 text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 font-medium transition' %>
+        <% else %>
+          <%= link_to 'Login', new_user_session_path, class: 'block py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 font-medium transition' %>
+          <%= link_to 'Sign Up', new_user_registration_path, class: 'block py-2 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium transition' %>
+        <% end %>
+      </div>
+      <script>
+        // Mobile nav toggle
+        document.addEventListener('DOMContentLoaded', function() {
+          var navToggle = document.getElementById('mobile-nav-toggle');
+          var navMenu = document.getElementById('mobile-nav-menu');
+          if (navToggle && navMenu) {
+            navToggle.addEventListener('click', function() {
+              navMenu.classList.toggle('hidden');
+            });
+          }
+        });
+      </script>
+    </header>
+    <main class="max-w-6xl mx-auto mt-8 mb-8 px-4 md:px-8 flex flex-col gap-6 transition-colors duration-300">
+      <% if notice %>
+        <div class="bg-green-100 dark:bg-green-900/50 border border-green-300 dark:border-green-700 text-green-800 dark:text-green-200 px-4 py-3 rounded mb-4 shadow-sm transition-colors duration-300 text-sm"> <%= notice %> </div>
+      <% end %>
+      <% if alert %>
+        <div class="bg-red-100 dark:bg-red-900/50 border border-red-300 dark:border-red-700 text-red-800 dark:text-red-200 px-4 py-3 rounded mb-4 shadow-sm transition-colors duration-300 text-sm"> <%= alert %> </div>
+      <% end %>
+      <%= yield %>
+    </main>
+  </body>
+</html>
